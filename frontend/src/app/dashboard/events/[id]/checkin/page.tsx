@@ -21,6 +21,15 @@ export default function CheckInPage() {
   const [loading, setLoading] = useState<string | null>(null);
   const [showScanner, setShowScanner] = useState(false);
 
+  const { data: event } = useQuery({
+    queryKey: ['event', id],
+    queryFn: async () => {
+      const { data } = await api.get(`/api/v1/tenants/${user?.tenantId}/events/${id}`);
+      return data;
+    },
+    enabled: !!user?.tenantId,
+  });
+
   const { data: registrations } = useQuery({
     queryKey: ['registrations', id],
     queryFn: async () => {
@@ -98,7 +107,10 @@ export default function CheckInPage() {
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Check-in</h1>
+        <div>
+          <p className="text-sm text-gray-500">{event?.title || 'Cargando evento...'}</p>
+          <h1 className="text-2xl font-bold">Check-in</h1>
+        </div>
         <button
           onClick={() => setShowScanner(true)}
           className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-bold text-lg flex items-center gap-2"

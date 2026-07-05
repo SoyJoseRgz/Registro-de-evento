@@ -17,6 +17,15 @@ export default function RegistrationsPage() {
   const [editForm, setEditForm] = useState({ attendeeName: '', attendeeEmail: '', attendeePhone: '' });
   const [qrModal, setQrModal] = useState<any>(null);
 
+  const { data: event } = useQuery({
+    queryKey: ['event', id],
+    queryFn: async () => {
+      const { data } = await api.get(`/api/v1/tenants/${user?.tenantId}/events/${id}`);
+      return data;
+    },
+    enabled: !!user?.tenantId,
+  });
+
   const { data: registrations, isLoading } = useQuery({
     queryKey: ['registrations', id],
     queryFn: async () => {
@@ -113,7 +122,10 @@ export default function RegistrationsPage() {
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Participantes</h1>
+        <div>
+          <p className="text-sm text-gray-500">{event?.title || 'Cargando evento...'}</p>
+          <h1 className="text-2xl font-bold">Participantes</h1>
+        </div>
         <button
           onClick={handleExport}
           className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"

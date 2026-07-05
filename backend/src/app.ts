@@ -6,11 +6,12 @@ import { errorHandler } from './middleware/errorHandler';
 import { generalLimiter } from './middleware/rateLimiter';
 import authRoutes from './routes/auth';
 import eventRoutes from './routes/events';
-import { getPublicBySlug } from './controllers/eventController';
+import { getPublicBySlug, getPublicEvents, getPublicAttendees } from './controllers/eventController';
 import registrationRoutes from './routes/registrations';
 import checkinRoutes from './routes/checkin';
 import reportRoutes from './routes/reports';
 import fieldRoutes from './routes/fields';
+import whaconnectRoutes from './routes/whaconnect';
 
 const app = express();
 
@@ -26,7 +27,9 @@ app.get('/health', (_, res) => {
 });
 
 // Public routes (no auth needed)
+app.get('/api/v1/events/public', getPublicEvents);
 app.get('/api/v1/events/public/:slug', getPublicBySlug);
+app.get('/api/v1/events/public/:eventId/attendees', getPublicAttendees);
 app.get('/api/v1/events/public/:eventId/fields', async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -53,6 +56,7 @@ app.use('/api/v1/tenants/:tenantId/events/:eventId/checkins', checkinRoutes);
 app.use('/api/v1/tenants/:tenantId/events/:eventId/report', reportRoutes);
 app.use('/api/v1/tenants/:tenantId/events/:eventId/export', reportRoutes);
 app.use('/api/v1/tenants/:tenantId/fields', fieldRoutes);
+app.use('/api/v1/whaconnect', whaconnectRoutes);
 
 // Error handler
 app.use(errorHandler);

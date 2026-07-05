@@ -74,7 +74,8 @@ export default function EditEventPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold mb-6">Editar Evento</h1>
+        <p className="text-sm text-gray-500">Editar evento</p>
+        <h1 className="text-2xl font-bold mb-6">{form.title}</h1>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>

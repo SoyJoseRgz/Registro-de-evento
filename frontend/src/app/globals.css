@@ -2,13 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
+body {
+  color: #1F2A24;
+  background: #F1ECDD;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+@layer components {
+  /* Dashed tear-line between a ticket's info panel and its stub, with
+     punched circle notches. --notch-bg must match whatever surface the
+     ticket sits on (defaults to the page's paper color). */
+  .ticket-perforation {
+    position: relative;
+    border-top: 2px dashed theme('colors.perforation');
+  }
+  .ticket-perforation::before,
+  .ticket-perforation::after {
+    content: '';
+    position: absolute;
+    top: -0.7rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 9999px;
+    background: var(--notch-bg, #F1ECDD);
+  }
+  .ticket-perforation::before {
+    left: -0.7rem;
+  }
+  .ticket-perforation::after {
+    right: -0.7rem;
+  }
 }

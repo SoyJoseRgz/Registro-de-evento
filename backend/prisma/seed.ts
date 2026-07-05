@@ -19,14 +19,18 @@ async function main() {
   console.log('Tenant created:', tenant.name);
 
   // Create admin user
-  const passwordHash = await bcrypt.hash('admin123', 12);
+  const passwordHash = await bcrypt.hash('Rodriguez010020#', 12);
   const admin = await prisma.user.upsert({
     where: { id: 'admin-001' },
-    update: {},
+    update: {
+      email: 'joserodriguez@hnet.com.mx',
+      passwordHash,
+      name: 'Admin User',
+    },
     create: {
       id: 'admin-001',
       tenantId: tenant.id,
-      email: 'admin@demo.com',
+      email: 'joserodriguez@hnet.com.mx',
       passwordHash,
       name: 'Admin User',
       role: 'admin',
@@ -37,7 +41,10 @@ async function main() {
   // Create sample event
   const event = await prisma.event.upsert({
     where: { id: 'event-001' },
-    update: {},
+    update: {
+      startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 9 * 60 * 60 * 1000),
+    },
     create: {
       id: 'event-001',
       tenantId: tenant.id,
@@ -46,8 +53,8 @@ async function main() {
       description: 'Una conferencia sobre las ultimas tendencias en tecnologia',
       eventType: 'conference',
       location: 'Centro de Convenciones',
-      startDate: new Date('2024-06-15T09:00:00Z'),
-      endDate: new Date('2024-06-15T18:00:00Z'),
+      startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + 9 * 60 * 60 * 1000),
       capacity: 100,
       status: 'published',
       createdBy: admin.id,
@@ -58,8 +65,8 @@ async function main() {
   console.log('Seeding complete!');
   console.log('---');
   console.log('Login credentials:');
-  console.log('  Email: admin@demo.com');
-  console.log('  Password: admin123');
+  console.log('  Email: joserodriguez@hnet.com.mx');
+  console.log('  Password: Rodriguez010020#');
   console.log('  Tenant slug: demo');
 }
 

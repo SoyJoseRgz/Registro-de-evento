@@ -120,6 +120,47 @@ export async function update(req: Request, res: Response) {
   }
 }
 
+export async function getPublicEvents(req: Request, res: Response) {
+  try {
+    const { tenantSlug } = req.query;
+    const prisma = getPrisma();
+
+    const tenant = await prisma.tenant.findUnique({ where: { slug: String(tenantSlug || '') } });
+    if (!tenant) {
+      return res.status(404).json({ error: 'Tenant not found' });
+    }
+
+    const events = await prisma.event.findMany({
+      where: { tenantId: tenant.id, status: 'published' },
+      orderBy: { startDate: 'asc' },
+      include: { _count: { select: { registrations: true } } },
+    });
+
+    res.json(events);
+  } catch (error) {
+    console.error('Get public events error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+export async function getPublicAttendees(req: Request, res: Response) {
+  try {
+    const { eventId } = req.params;
+    const prisma = getPrisma();
+
+    const registrations = await prisma.registration.findMany({
+      where: { eventId, status: { not: 'cancelled' } },
+      select: { attendeeName: true },
+      orderBy: { registeredAt: 'asc' },
+    });
+
+    res.json(registrations.map((r) => r.attendeeName));
+  } catch (error) {
+    console.error('Get public attendees error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 export async function getPublicBySlug(req: Request, res: Response) {
   try {
     const { slug } = req.params;

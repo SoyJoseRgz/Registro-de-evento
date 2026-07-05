@@ -39,6 +39,10 @@ export async function registerAttendee(req: Request, res: Response) {
       return res.status(400).json({ error: 'Event is not published' });
     }
 
+    if (event.endDate < new Date()) {
+      return res.status(400).json({ error: 'Event has already ended' });
+    }
+
     const registrationCount = await prisma.registration.count({
       where: { eventId, status: { not: 'cancelled' } },
     });
@@ -48,11 +52,19 @@ export async function registerAttendee(req: Request, res: Response) {
     }
 
     const existing = await prisma.registration.findFirst({
-      where: { eventId, attendeeEmail, status: { not: 'cancelled' } },
+      where: {
+        eventId,
+        status: { not: 'cancelled' },
+        OR: [
+          { attendeeEmail },
+          ...(attendeePhone ? [{ attendeePhone }] : []),
+        ],
+      },
     });
 
     if (existing) {
-      return res.status(409).json({ error: 'Already registered with this email' });
+      const field = existing.attendeeEmail === attendeeEmail ? 'email' : 'phone number';
+      return res.status(409).json({ error: `Already registered with this ${field}` });
     }
 
     const registration = await prisma.registration.create({
